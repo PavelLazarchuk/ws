@@ -1,19 +1,21 @@
 const toJSON = require("../utils/toJSON");
 const getId = require("../utils/getRandomId");
-const { ALL_MESSAGE } = require("../utils/constants");
+const { ONE_MESSAGE } = require("../utils/constants");
 
 module.exports = (ws, dataBase, message) => {
-  dataBase.push({
+  const newMess = {
     message,
     id: getId(),
     changed: false,
     date: new Date(),
-  });
+  };
+
+  dataBase.push(newMess);
 
   ws.send(
     toJSON({
-      type: ALL_MESSAGE,
-      data: dataBase,
+      type: ONE_MESSAGE,
+      data: newMess,
     })
   );
 };

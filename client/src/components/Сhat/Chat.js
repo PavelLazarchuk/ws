@@ -2,22 +2,23 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import MessagesList from '../MessagesList';
-import { getAllMessages } from 'store/message/actions';
+import { initializeWebSocket } from 'store/message/actions';
 
-const Chat = ({ messages, getAllMessages }) => {
+const Chat = ({ error, messages, initializeWebSocket }) => {
 	useEffect(() => {
-		getAllMessages();
-	}, [getAllMessages]);
+		initializeWebSocket();
+	}, [initializeWebSocket]);
 
-	return <MessagesList messages={messages} />;
+	return <MessagesList error={error} messages={messages} />;
 };
 
 const mstp = ({ message }) => ({
+	error: message.error,
 	messages: message.messages,
 });
 
 const mdtp = {
-	getAllMessages,
+	initializeWebSocket,
 };
 
 export default connect(mstp, mdtp)(Chat);

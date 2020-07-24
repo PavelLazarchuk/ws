@@ -1,16 +1,15 @@
 import React from 'react';
 
-// import MessageItem from './MessageItem';
+import MessageItem from './MessageItem';
 
-const MessagesList = ({ messages }) => {
-	return (
-		<div className="chat">
-			{(!messages || messages.length === 0) && <div>message history is clean</div>}
+const MessagesList = ({ error, messages }) => (
+	<div className="chat">
+		{error && <div>{error}</div>}
 
-			{messages && messages.length > 0 && <div>MessageItem</div>}
-			<div></div>
-		</div>
-	);
-};
+		{messages.length === 0 && <div>message history is</div>}
+
+		{messages.length > 0 && messages.map(elem => <MessageItem key={elem.id} {...elem} />)}
+	</div>
+);
 
 export default MessagesList;

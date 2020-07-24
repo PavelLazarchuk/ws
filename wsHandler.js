@@ -4,18 +4,20 @@ const {
   NEW_MESSAGE,
   ALL_MESSAGE,
   CHANGE_MESSAGE,
+  DELETE_MESSAGE,
 } = require("./utils/constants");
 const toJSON = require("./utils/toJSON");
 const newMessage = require("./controllers/newMessage");
 const getMessages = require("./controllers/getMessages");
 const changeMessage = require("./controllers/changeMessage");
+const deleteMessage = require("./controllers/deleteMessage");
 
 module.exports = (ws, req) => {
   let dataBase = [];
   ws.on("open", () => {
     ws.send(
       toJSON({
-        status: OPEN,
+        type: OPEN,
         message: "server open",
       })
     );
@@ -24,7 +26,7 @@ module.exports = (ws, req) => {
   ws.on("close", () => {
     ws.send(
       toJSON({
-        status: CLOSE,
+        type: CLOSE,
         message: "server close",
       })
     );
@@ -34,20 +36,29 @@ module.exports = (ws, req) => {
     const { type, message } = JSON.parse(data);
 
     switch (type) {
-      case NEW_MESSAGE:
-        newMessage(ws, dataBase, message);
-        break;
-
       case ALL_MESSAGE:
         getMessages(ws, dataBase);
+        break;
+
+      case NEW_MESSAGE:
+        newMessage(ws, dataBase, message);
         break;
 
       case CHANGE_MESSAGE:
         changeMessage(ws, dataBase, message);
         break;
 
+      case DELETE_MESSAGE:
+        deleteMessage(ws, dataBase, message);
+        break;
+
       default:
-        ws.send(toJSON(dataBase));
+        ws.send(
+          toJSON({
+            type: ALL_MESSAGE,
+            data: dataBase,
+          })
+        );
     }
   });
 };
