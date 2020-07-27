@@ -1,21 +1,19 @@
 const toJSON = require("../utils/toJSON");
-const getId = require("../utils/getRandomId");
+const Massage = require("../models/Message");
+const broadcast = require("../utils/broadcast");
 const { ONE_MESSAGE } = require("../utils/constants");
 
-module.exports = (ws, dataBase, message) => {
-  const newMess = {
-    message,
-    id: getId(),
-    changed: false,
-    date: new Date(),
-  };
+module.exports = (clients, text) => {
+  const newMess = new Massage({
+    text,
+  });
 
-  dataBase.push(newMess);
-
-  ws.send(
-    toJSON({
+  newMess.save().then((message) => {
+    const data = toJSON({
       type: ONE_MESSAGE,
-      data: newMess,
-    })
-  );
+      data: message,
+    });
+
+    broadcast(clients, data);
+  });
 };

@@ -12,8 +12,7 @@ const getMessages = require("./controllers/getMessages");
 const changeMessage = require("./controllers/changeMessage");
 const deleteMessage = require("./controllers/deleteMessage");
 
-module.exports = (ws, req) => {
-  let dataBase = [];
+module.exports = (ws, clients) => {
   ws.on("open", () => {
     ws.send(
       toJSON({
@@ -37,26 +36,26 @@ module.exports = (ws, req) => {
 
     switch (type) {
       case ALL_MESSAGE:
-        getMessages(ws, dataBase);
+        getMessages(ws);
         break;
 
       case NEW_MESSAGE:
-        newMessage(ws, dataBase, message);
+        newMessage(clients, message);
         break;
 
       case CHANGE_MESSAGE:
-        changeMessage(ws, dataBase, message);
+        changeMessage(clients, message);
         break;
 
       case DELETE_MESSAGE:
-        deleteMessage(ws, dataBase, message);
+        deleteMessage(clients, message);
         break;
 
       default:
         ws.send(
           toJSON({
             type: ALL_MESSAGE,
-            data: dataBase,
+            data: [],
           })
         );
     }

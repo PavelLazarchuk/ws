@@ -1,9 +1,9 @@
 const getDate = str => {
-	const [date, time] = str.split('T');
-	const [year, month, day] = date.split('-');
-	const [hour, minutes] = time.split(':');
+	const date = new Date(str);
+	const [strDate] = str.split('T');
+	const [year, month, day] = strDate.split('-');
 
-	return `${minutes}:${hour} ${day}-${month}-${year}`;
+	return `${date.getHours()}:${date.getMinutes()} ${day}-${month}-${year}`;
 };
 
 export default getDate;

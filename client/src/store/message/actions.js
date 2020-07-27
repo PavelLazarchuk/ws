@@ -1,21 +1,23 @@
 import toJSON from 'utils/toJSON';
 import { errorAction } from 'utils/action/errorAction';
 import actionFactory from 'utils/action/actionFactory';
-import { GET_MESSAGES, ALL_MESSAGE, ONE_MESSAGE } from './types';
+import { GET_MESSAGES, ALL_MESSAGE, ONE_MESSAGE, OPEN_WS, CLOSE_WS } from './types';
 
+const openWS = actionFactory(OPEN_WS);
+const closeWS = actionFactory(CLOSE_WS);
 const oneMessage = actionFactory(ONE_MESSAGE);
 const getMessages = actionFactory(GET_MESSAGES);
 
-const ws = new WebSocket('ws://localhost:5000');
-
 export const initializeWebSocket = () => dispatch => {
-	ws.onopen = e => {
+	const ws = new WebSocket('ws://localhost:5000');
+	ws.onopen = () => {
 		ws.send(
 			toJSON({
 				type: ALL_MESSAGE,
-				message: e.type,
 			}),
 		);
+
+		dispatch(openWS(ws));
 	};
 
 	ws.onmessage = message => {
@@ -31,36 +33,8 @@ export const initializeWebSocket = () => dispatch => {
 	ws.onerror = error => {
 		dispatch(errorAction(error.message));
 	};
-};
 
-export const addMessage = message => {
-	ws.send(
-		toJSON({
-			message,
-			type: 'NEW_MESSAGE',
-		}),
-	);
-};
-
-export const updateMessage = (id, message) => {
-	ws.send(
-		toJSON({
-			type: 'CHANGE_MESSAGE',
-			message: {
-				id,
-				message,
-			},
-		}),
-	);
-};
-
-export const deleteMessage = id => {
-	ws.send(
-		toJSON({
-			type: 'DELETE_MESSAGE',
-			message: {
-				id,
-			},
-		}),
-	);
+	ws.onclose = () => {
+		dispatch(closeWS());
+	};
 };

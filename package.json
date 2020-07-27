@@ -21,7 +21,7 @@
     "nodemon": "^2.0.4"
   },
   "dependencies": {
-    "random-id": "^1.0.4",
+    "mongoose": "^5.9.25",
     "ws": "^7.3.1"
   }
 }
